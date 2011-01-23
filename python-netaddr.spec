@@ -9,6 +9,8 @@ Source0:	http://netaddr.googlecode.com/files/netaddr-%{version}.tar.gz
 # Source0-md5:	8b7b574bca2f60722ccd90c71334ee32
 URL:		http://code.google.com/p/netaddr/
 BuildRequires:	python-devel
+BuildRequires:	python-modules
+BuildRequires:	rpm-pythonprov
 BuildArch:	noarch
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
