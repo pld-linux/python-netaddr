@@ -2,13 +2,12 @@
 Summary:	A pure Python network address representation and manipulation library
 Name:		python-netaddr
 Version:	0.7.4
-Release:	1
+Release:	2
 License:	BSD
 Group:		Development/Languages/Python
 Source0:	http://netaddr.googlecode.com/files/netaddr-%{version}.tar.gz
-# Source0-md5:	8b7b574bca2f60722ccd90c71334ee32
+# Source0-md5:	86a29b8cf0dbc46e85ec8339f6e8b3f1
 URL:		http://code.google.com/p/netaddr/
-BuildRequires:	python-devel
 BuildRequires:	python-modules
 BuildRequires:	rpm-pythonprov
 BuildArch:	noarch
