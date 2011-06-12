@@ -1,14 +1,19 @@
+#
+# Conditional build:
+%bcond_without	python3		# do not build python3 modules
+
 %define		module	netaddr
 Summary:	A pure Python network address representation and manipulation library
 Name:		python-netaddr
-Version:	0.7.4
-Release:	2
+Version:	0.7.5
+Release:	1
 License:	BSD
 Group:		Development/Languages/Python
-Source0:	http://netaddr.googlecode.com/files/netaddr-%{version}.tar.gz
-# Source0-md5:	86a29b8cf0dbc46e85ec8339f6e8b3f1
-URL:		http://code.google.com/p/netaddr/
+Source0:	https://github.com/downloads/drkjam/netaddr/netaddr-%{version}.tar.gz
+# Source0-md5:	06168e1efb753d4d3e48778a5373e192
+URL:		https://github.com/drkjam/netaddr/
 BuildRequires:	python-modules
+%{?with_python3:BuildRequires:	python3-modules}
 BuildRequires:	rpm-pythonprov
 BuildArch:	noarch
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
@@ -33,11 +38,47 @@ Included are routines for:
 - querying IEEE OUI and IAB organisational information
 - querying of IP standards related data from key IANA data sources
 
+%package -n python3-netaddr
+Summary:	A pure Python network address representation and manipulation library
+Group:		Development/Languages/Python
+
+%description -n python3-netaddr
+A pure Python network address representation and manipulation library.
+
+netaddr provides a Pythonic way to work with:
+- IPv4 and IPv6 addresses and subnets (including CIDR notation)
+- MAC (Media Access Control) addresses in multiple presentation
+  formats
+- IEEE EUI-64, OUI and IAB identifiers
+- nmap-style IP address ranges
+- a user friendly IP glob-style format
+
+Included are routines for:
+- generating, sorting and summarizing IP addresses
+- converting IP addresses and ranges between various different formats
+- performing set based operations on groups of IP addresses and
+  subnets
+- arbitrary IP address range calculations and conversions
+- querying IEEE OUI and IAB organisational information
+- querying of IP standards related data from key IANA data sources
+
+%package -n netaddr
+Summary:	An interactive shell for the Python netaddr library
+Group:		Development/Languages/Python
+Requires:	%{name} = %{version}-%{release}
+
+%description -n netaddr
+Interactive shell for the python-netaddr library.
+
 %prep
 %setup -q -n %{module}-%{version}
 
 %build
 %{__python} ./setup.py build
+
+%if %{with python3}
+%{__python3} ./setup.py build
+%endif
 
 %install
 rm -rf $RPM_BUILD_ROOT
@@ -50,13 +91,21 @@ rm -rf $RPM_BUILD_ROOT
 %py_comp $RPM_BUILD_ROOT%{py_sitescriptdir}
 %py_postclean
 
+%if %{with python3}
+%{__python3} ./setup.py install \
+	--optimize 2 \
+	--root=$RPM_BUILD_ROOT
+%py3_ocomp $RPM_BUILD_ROOT%{py_sitescriptdir}
+%py3_comp $RPM_BUILD_ROOT%{py_sitescriptdir}
+%py3_postclean
+%endif
+
 %clean
 rm -rf $RPM_BUILD_ROOT
 
 %files
 %defattr(644,root,root,755)
 %doc docs/api AUTHORS CHANGELOG README THANKS
-%attr(755,root,root) %{_bindir}/netaddr
 %{py_sitescriptdir}/*.egg-info
 %dir %{py_sitescriptdir}/%{module}
 %{py_sitescriptdir}/%{module}/*.py[co]
@@ -72,7 +121,36 @@ rm -rf $RPM_BUILD_ROOT
 %{py_sitescriptdir}/%{module}/strategy/*.py[co]
 %dir %{py_sitescriptdir}/%{module}/tests
 %{py_sitescriptdir}/%{module}/tests/*.py[co]
-%{py_sitescriptdir}/%{module}/tests/core
-%{py_sitescriptdir}/%{module}/tests/eui
-%{py_sitescriptdir}/%{module}/tests/ip
-%{py_sitescriptdir}/%{module}/tests/strategy
+#%{py_sitescriptdir}/%{module}/tests/2.x/core
+#%{py_sitescriptdir}/%{module}/tests/2.x/eui
+#%{py_sitescriptdir}/%{module}/tests/2.x/ip
+#%{py_sitescriptdir}/%{module}/tests/2.x/strategy
+
+%if %{with python3}
+%files -n python3-netaddr
+%defattr(644,root,root,755)
+%doc docs/api AUTHORS CHANGELOG README THANKS
+%{py3_sitescriptdir}/*.egg-info
+%dir %{py3_sitescriptdir}/%{module}
+%{py3_sitescriptdir}/%{module}/*.py[co]
+%dir %{py3_sitescriptdir}/%{module}/eui
+%{py3_sitescriptdir}/%{module}/eui/*.py[co]
+%{py3_sitescriptdir}/%{module}/eui/*.idx
+%{py3_sitescriptdir}/%{module}/eui/*.txt
+%dir %{py3_sitescriptdir}/%{module}/ip
+%{py3_sitescriptdir}/%{module}/ip/*.py[co]
+%{py3_sitescriptdir}/%{module}/ip/*-space
+%{py3_sitescriptdir}/%{module}/ip/*-addresses
+%dir %{py3_sitescriptdir}/%{module}/strategy
+%{py3_sitescriptdir}/%{module}/strategy/*.py[co]
+%dir %{py3_sitescriptdir}/%{module}/tests
+%{py3_sitescriptdir}/%{module}/tests/*.py[co]
+#%{py3_sitescriptdir}/%{module}/tests/3.x/core
+#%{py3_sitescriptdir}/%{module}/tests/3.x/eui
+#%{py3_sitescriptdir}/%{module}/tests/3.x/ip
+#%{py3_sitescriptdir}/%{module}/tests/3.x/strategy
+%endif
+
+%files -n netaddr
+%defattr(644,root,root,755)
+%attr(755,root,root) %{_bindir}/netaddr
