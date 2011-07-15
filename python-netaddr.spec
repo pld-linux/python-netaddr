@@ -6,7 +6,7 @@
 Summary:	A pure Python network address representation and manipulation library
 Name:		python-netaddr
 Version:	0.7.5
-Release:	1
+Release:	2
 License:	BSD
 Group:		Development/Languages/Python
 Source0:	https://github.com/downloads/drkjam/netaddr/netaddr-%{version}.tar.gz
@@ -97,7 +97,6 @@ rm -rf $RPM_BUILD_ROOT
 	--root=$RPM_BUILD_ROOT
 %py3_ocomp $RPM_BUILD_ROOT%{py_sitescriptdir}
 %py3_comp $RPM_BUILD_ROOT%{py_sitescriptdir}
-%py3_postclean
 %endif
 
 %clean
@@ -132,19 +131,24 @@ rm -rf $RPM_BUILD_ROOT
 %doc docs/api AUTHORS CHANGELOG README THANKS
 %{py3_sitescriptdir}/*.egg-info
 %dir %{py3_sitescriptdir}/%{module}
-%{py3_sitescriptdir}/%{module}/*.py[co]
+%{py3_sitescriptdir}/%{module}/*.py
+%{py3_sitescriptdir}/%{module}/__pycache__
 %dir %{py3_sitescriptdir}/%{module}/eui
-%{py3_sitescriptdir}/%{module}/eui/*.py[co]
+%{py3_sitescriptdir}/%{module}/eui/*.py
+%{py3_sitescriptdir}/%{module}/eui/__pycache__
 %{py3_sitescriptdir}/%{module}/eui/*.idx
 %{py3_sitescriptdir}/%{module}/eui/*.txt
 %dir %{py3_sitescriptdir}/%{module}/ip
-%{py3_sitescriptdir}/%{module}/ip/*.py[co]
+%{py3_sitescriptdir}/%{module}/ip/*.py
+%{py3_sitescriptdir}/%{module}/ip/__pycache__
 %{py3_sitescriptdir}/%{module}/ip/*-space
 %{py3_sitescriptdir}/%{module}/ip/*-addresses
 %dir %{py3_sitescriptdir}/%{module}/strategy
-%{py3_sitescriptdir}/%{module}/strategy/*.py[co]
+%{py3_sitescriptdir}/%{module}/strategy/*.py
+%{py3_sitescriptdir}/%{module}/strategy/__pycache__
 %dir %{py3_sitescriptdir}/%{module}/tests
-%{py3_sitescriptdir}/%{module}/tests/*.py[co]
+%{py3_sitescriptdir}/%{module}/tests/*.py
+%{py3_sitescriptdir}/%{module}/tests/__pycache__
 #%{py3_sitescriptdir}/%{module}/tests/3.x/core
 #%{py3_sitescriptdir}/%{module}/tests/3.x/eui
 #%{py3_sitescriptdir}/%{module}/tests/3.x/ip
