@@ -6,11 +6,12 @@
 Summary:	A pure Python network address representation and manipulation library
 Name:		python-netaddr
 Version:	0.7.5
-Release:	2
+Release:	3
 License:	BSD
 Group:		Development/Languages/Python
 Source0:	https://github.com/downloads/drkjam/netaddr/netaddr-%{version}.tar.gz
 # Source0-md5:	06168e1efb753d4d3e48778a5373e192
+Patch0:		issue-2.patch
 URL:		https://github.com/drkjam/netaddr/
 BuildRequires:	python-modules
 %{?with_python3:BuildRequires:	python3-modules}
@@ -72,18 +73,18 @@ Interactive shell for the python-netaddr library.
 
 %prep
 %setup -q -n %{module}-%{version}
+%patch0 -p1
 
 %build
-%{__python} ./setup.py build
+%{__python} setup.py build
 
 %if %{with python3}
-%{__python3} ./setup.py build
+%{__python3} setup.py build
 %endif
 
 %install
 rm -rf $RPM_BUILD_ROOT
-
-%{__python} ./setup.py install \
+%{__python} setup.py install \
 	--optimize 2 \
 	--root=$RPM_BUILD_ROOT
 
@@ -92,7 +93,7 @@ rm -rf $RPM_BUILD_ROOT
 %py_postclean
 
 %if %{with python3}
-%{__python3} ./setup.py install \
+%{__python3} setup.py install \
 	--optimize 2 \
 	--root=$RPM_BUILD_ROOT
 %py3_ocomp $RPM_BUILD_ROOT%{py_sitescriptdir}
