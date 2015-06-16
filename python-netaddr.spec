@@ -1,21 +1,22 @@
 #
 # Conditional build:
+%bcond_without	apidocs	# sphinx based documentation
 %bcond_without	python3		# do not build python3 modules
 
 %define		module	netaddr
 Summary:	A pure Python network address representation and manipulation library
 Name:		python-netaddr
-Version:	0.7.5
-Release:	5
+Version:	0.7.14
+Release:	1
 License:	BSD
 Group:		Development/Languages/Python
-Source0:	https://github.com/downloads/drkjam/netaddr/netaddr-%{version}.tar.gz
-# Source0-md5:	06168e1efb753d4d3e48778a5373e192
-Patch0:		issue-2.patch
+Source0:	https://pypi.python.org/packages/source/n/netaddr/%{module}-%{version}.tar.gz
+# Source0-md5:	1ba9d1e887c838f190774cf6b74c109d
 URL:		https://github.com/drkjam/netaddr/
 BuildRequires:	python-modules
 %{?with_python3:BuildRequires:	python3-modules}
 BuildRequires:	rpm-pythonprov
+%{?with_apidocs:BuildRequires:	sphinx-pdg}
 BuildArch:	noarch
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
@@ -73,7 +74,6 @@ Interactive shell for the python-netaddr library.
 
 %prep
 %setup -q -n %{module}-%{version}
-%patch0 -p1
 
 %build
 %{__python} setup.py build
@@ -92,6 +92,10 @@ rm -rf $RPM_BUILD_ROOT
 %py_comp $RPM_BUILD_ROOT%{py_sitescriptdir}
 %py_postclean
 
+%if %{with apidocs}
+sphinx-build -b html -d build/doctrees -D latex_paper_size=a4 docs/source build/html
+%endif
+
 %if %{with python3}
 %{__python3} setup.py install \
 	--optimize 2 \
@@ -105,7 +109,10 @@ rm -rf $RPM_BUILD_ROOT
 
 %files
 %defattr(644,root,root,755)
-%doc docs/api AUTHORS CHANGELOG README THANKS
+%doc AUTHORS CHANGELOG README THANKS
+%if %{with apidocs}
+%doc build/html
+%endif
 %{py_sitescriptdir}/*.egg-info
 %dir %{py_sitescriptdir}/%{module}
 %{py_sitescriptdir}/%{module}/*.py[co]
@@ -115,8 +122,7 @@ rm -rf $RPM_BUILD_ROOT
 %{py_sitescriptdir}/%{module}/eui/*.txt
 %dir %{py_sitescriptdir}/%{module}/ip
 %{py_sitescriptdir}/%{module}/ip/*.py[co]
-%{py_sitescriptdir}/%{module}/ip/*-space
-%{py_sitescriptdir}/%{module}/ip/*-addresses
+%{py_sitescriptdir}/%{module}/ip/*.xml
 %dir %{py_sitescriptdir}/%{module}/strategy
 %{py_sitescriptdir}/%{module}/strategy/*.py[co]
 %dir %{py_sitescriptdir}/%{module}/tests
@@ -129,7 +135,10 @@ rm -rf $RPM_BUILD_ROOT
 %if %{with python3}
 %files -n python3-netaddr
 %defattr(644,root,root,755)
-%doc docs/api AUTHORS CHANGELOG README THANKS
+%doc AUTHORS CHANGELOG README THANKS
+%if %{with apidocs}
+%doc build/html
+%endif
 %{py3_sitescriptdir}/*.egg-info
 %dir %{py3_sitescriptdir}/%{module}
 %{py3_sitescriptdir}/%{module}/*.py
@@ -142,8 +151,7 @@ rm -rf $RPM_BUILD_ROOT
 %dir %{py3_sitescriptdir}/%{module}/ip
 %{py3_sitescriptdir}/%{module}/ip/*.py
 %{py3_sitescriptdir}/%{module}/ip/__pycache__
-%{py3_sitescriptdir}/%{module}/ip/*-space
-%{py3_sitescriptdir}/%{module}/ip/*-addresses
+%{py3_sitescriptdir}/%{module}/ip/*.xml
 %dir %{py3_sitescriptdir}/%{module}/strategy
 %{py3_sitescriptdir}/%{module}/strategy/*.py
 %{py3_sitescriptdir}/%{module}/strategy/__pycache__
