@@ -76,15 +76,15 @@ Interactive shell for the python-netaddr library.
 %setup -q -n %{module}-%{version}
 
 %build
-%{__python} setup.py build
+%py_build
 
 %if %{with python3}
-%{__python3} setup.py build
+%py3_build
 %endif
 
 %install
 rm -rf $RPM_BUILD_ROOT
-%{__python} setup.py install \
+%py_install \
 	--optimize 2 \
 	--root=$RPM_BUILD_ROOT
 
@@ -97,7 +97,7 @@ sphinx-build -b html -d build/doctrees -D latex_paper_size=a4 docs/source build/
 %endif
 
 %if %{with python3}
-%{__python3} setup.py install \
+%py3_install \
 	--optimize 2 \
 	--root=$RPM_BUILD_ROOT
 %py3_ocomp $RPM_BUILD_ROOT%{py_sitescriptdir}
