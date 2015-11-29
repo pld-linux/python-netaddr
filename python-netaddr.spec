@@ -13,6 +13,7 @@ Group:		Development/Languages/Python
 Source0:	https://pypi.python.org/packages/source/n/netaddr/%{module}-%{version}.tar.gz
 # Source0-md5:	1ba9d1e887c838f190774cf6b74c109d
 URL:		https://github.com/drkjam/netaddr/
+BuildRequires:	rpmbuild(macros) >= 1.710
 BuildRequires:	python-modules
 %{?with_python3:BuildRequires:	python3-modules}
 BuildRequires:	rpm-pythonprov
