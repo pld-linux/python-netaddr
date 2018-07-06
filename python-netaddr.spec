@@ -6,12 +6,12 @@
 %define		module	netaddr
 Summary:	A pure Python network address representation and manipulation library
 Name:		python-netaddr
-Version:	0.7.14
-Release:	6
+Version:	0.7.19
+Release:	1
 License:	BSD
 Group:		Development/Languages/Python
 Source0:	https://pypi.python.org/packages/source/n/netaddr/%{module}-%{version}.tar.gz
-# Source0-md5:	1ba9d1e887c838f190774cf6b74c109d
+# Source0-md5:	51019ef59c93f3979bcb37d3b8527e07
 URL:		https://github.com/drkjam/netaddr/
 BuildRequires:	rpmbuild(macros) >= 1.710
 BuildRequires:	python-modules
@@ -110,13 +110,15 @@ rm -rf $RPM_BUILD_ROOT
 
 %files
 %defattr(644,root,root,755)
-%doc AUTHORS CHANGELOG README THANKS
+%doc AUTHORS CHANGELOG README.md
 %if %{with apidocs}
 %doc build/html
 %endif
 %{py_sitescriptdir}/*.egg-info
 %dir %{py_sitescriptdir}/%{module}
 %{py_sitescriptdir}/%{module}/*.py[co]
+%dir %{py_sitescriptdir}/%{module}/contrib
+%{py_sitescriptdir}/%{module}/contrib/*.py[co]
 %dir %{py_sitescriptdir}/%{module}/eui
 %{py_sitescriptdir}/%{module}/eui/*.py[co]
 %{py_sitescriptdir}/%{module}/eui/*.idx
@@ -126,8 +128,8 @@ rm -rf $RPM_BUILD_ROOT
 %{py_sitescriptdir}/%{module}/ip/*.xml
 %dir %{py_sitescriptdir}/%{module}/strategy
 %{py_sitescriptdir}/%{module}/strategy/*.py[co]
-%dir %{py_sitescriptdir}/%{module}/tests
-%{py_sitescriptdir}/%{module}/tests/*.py[co]
+#%dir %{py_sitescriptdir}/%{module}/tests
+#%{py_sitescriptdir}/%{module}/tests/*.py[co]
 #%{py_sitescriptdir}/%{module}/tests/2.x/core
 #%{py_sitescriptdir}/%{module}/tests/2.x/eui
 #%{py_sitescriptdir}/%{module}/tests/2.x/ip
@@ -136,7 +138,7 @@ rm -rf $RPM_BUILD_ROOT
 %if %{with python3}
 %files -n python3-netaddr
 %defattr(644,root,root,755)
-%doc AUTHORS CHANGELOG README THANKS
+%doc AUTHORS CHANGELOG README.md
 %if %{with apidocs}
 %doc build/html
 %endif
@@ -144,6 +146,9 @@ rm -rf $RPM_BUILD_ROOT
 %dir %{py3_sitescriptdir}/%{module}
 %{py3_sitescriptdir}/%{module}/*.py
 %{py3_sitescriptdir}/%{module}/__pycache__
+%dir %{py3_sitescriptdir}/%{module}/contrib
+%{py3_sitescriptdir}/%{module}/contrib/*.py
+%{py3_sitescriptdir}/%{module}/contrib/__pycache__
 %dir %{py3_sitescriptdir}/%{module}/eui
 %{py3_sitescriptdir}/%{module}/eui/*.py
 %{py3_sitescriptdir}/%{module}/eui/__pycache__
@@ -156,9 +161,9 @@ rm -rf $RPM_BUILD_ROOT
 %dir %{py3_sitescriptdir}/%{module}/strategy
 %{py3_sitescriptdir}/%{module}/strategy/*.py
 %{py3_sitescriptdir}/%{module}/strategy/__pycache__
-%dir %{py3_sitescriptdir}/%{module}/tests
-%{py3_sitescriptdir}/%{module}/tests/*.py
-%{py3_sitescriptdir}/%{module}/tests/__pycache__
+#%dir %{py3_sitescriptdir}/%{module}/tests
+#%{py3_sitescriptdir}/%{module}/tests/*.py
+#%{py3_sitescriptdir}/%{module}/tests/__pycache__
 #%{py3_sitescriptdir}/%{module}/tests/3.x/core
 #%{py3_sitescriptdir}/%{module}/tests/3.x/eui
 #%{py3_sitescriptdir}/%{module}/tests/3.x/ip
