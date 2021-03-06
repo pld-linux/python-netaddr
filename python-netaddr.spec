@@ -7,11 +7,12 @@
 Summary:	A pure Python network address representation and manipulation library
 Name:		python-netaddr
 Version:	0.7.19
-Release:	2
+Release:	3
 License:	BSD
 Group:		Development/Languages/Python
 Source0:	https://pypi.python.org/packages/source/n/netaddr/%{module}-%{version}.tar.gz
 # Source0-md5:	51019ef59c93f3979bcb37d3b8527e07
+Patch0:		script-shebang.patch
 URL:		https://github.com/drkjam/netaddr/
 BuildRequires:	rpmbuild(macros) >= 1.710
 BuildRequires:	python-modules
@@ -68,13 +69,21 @@ Included are routines for:
 %package -n netaddr
 Summary:	An interactive shell for the Python netaddr library
 Group:		Development/Languages/Python
+%if %{with python3}
+Requires:	python3-netaddr = %{version}-%{release}
+%else
 Requires:	%{name} = %{version}-%{release}
+%endif
 
 %description -n netaddr
 Interactive shell for the python-netaddr library.
 
 %prep
 %setup -q -n %{module}-%{version}
+%patch0 -p1
+
+%{__sed} -i -e '1s,/usr/bin/env python,%{?with_python3:%{__python3}}%{!?with_python3:%{__python}},' \
+	netaddr/tools/netaddr
 
 %build
 %py_build
