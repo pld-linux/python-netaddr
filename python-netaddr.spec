@@ -7,7 +7,7 @@
 Summary:	A pure Python network address representation and manipulation library
 Name:		python-netaddr
 Version:	0.7.19
-Release:	3
+Release:	4
 License:	BSD
 Group:		Development/Languages/Python
 Source0:	https://pypi.python.org/packages/source/n/netaddr/%{module}-%{version}.tar.gz
