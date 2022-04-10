@@ -7,7 +7,7 @@
 Summary:	A pure Python network address representation and manipulation library
 Name:		python-netaddr
 Version:	0.7.19
-Release:	6
+Release:	7
 License:	BSD
 Group:		Development/Languages/Python
 Source0:	https://pypi.python.org/packages/source/n/netaddr/%{module}-%{version}.tar.gz
@@ -107,6 +107,8 @@ sphinx-build -b html -d build/doctrees -D latex_paper_size=a4 docs/source build/
 %endif
 
 %if %{with python3}
+# Remove python2 artefacts
+%{__rm} -f $RPM_BUILD_ROOT%{_bindir}/*
 %py3_install \
 	--optimize 2 \
 	--root=$RPM_BUILD_ROOT
