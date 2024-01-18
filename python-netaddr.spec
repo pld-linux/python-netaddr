@@ -1,24 +1,38 @@
 #
 # Conditional build:
-%bcond_without	apidocs	# sphinx based documentation
-%bcond_without	python3		# do not build python3 modules
+%bcond_without	doc		# Sphinx based documentation
+%bcond_without	tests		# unit tests
+%bcond_without	python2		# CPython 2.x modules
+%bcond_without	python3		# CPython 3.x modules
 
 %define		module	netaddr
 Summary:	A pure Python network address representation and manipulation library
+Summary(pl.UTF-8):	Czysto pythonowa biblioteka do reprezentacji i operacji na adresach sieciowych
 Name:		python-netaddr
-Version:	0.7.19
-Release:	7
+Version:	0.10.1
+Release:	1
 License:	BSD
 Group:		Development/Languages/Python
-Source0:	https://pypi.python.org/packages/source/n/netaddr/%{module}-%{version}.tar.gz
-# Source0-md5:	51019ef59c93f3979bcb37d3b8527e07
-Patch0:		script-shebang.patch
+Source0:	https://files.pythonhosted.org/packages/source/n/netaddr/%{module}-%{version}.tar.gz
+# Source0-md5:	c0d7b080da18c851ea436389813d7652
+Patch0:		netaddr-coding.patch
 URL:		https://github.com/drkjam/netaddr/
-BuildRequires:	rpmbuild(macros) >= 1.710
-BuildRequires:	python-modules
-%{?with_python3:BuildRequires:	python3-modules}
+%if %{with python2}
+BuildRequires:	python-modules >= 1:2.7
+%if %{with tests}
+BuildRequires:	python-importlib_resources
+BuildRequires:	python-pytest
+%endif
+%endif
+%if %{with python3}
+BuildRequires:	python3-modules >= 1:3.5
+%if %{with tests}
+BuildRequires:	python3-pytest
+%endif
+%endif
+BuildRequires:	rpmbuild(macros) >= 1.714
 BuildRequires:	rpm-pythonprov
-%{?with_apidocs:BuildRequires:	sphinx-pdg}
+%{?with_doc:BuildRequires:	sphinx-pdg-3}
 BuildArch:	noarch
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
@@ -42,8 +56,28 @@ Included are routines for:
 - querying IEEE OUI and IAB organisational information
 - querying of IP standards related data from key IANA data sources
 
+%description -l pl.UTF-8
+Czysto pythonowa biblioteka do reprezentacji i operacji na adresach
+sieciowych.
+
+Zapewnia pythonowe sposoby pracy z:
+- adresami i podsieciami IPv4 i IPv6 (wraz z notacją CIDR)
+- adresami MAC (Media Access Control) w wielu formatach
+- identyfikatorami IEEE EUI-64, OUI i IAB
+- przedziałami adresów IP w stylu nmapa
+- przyjaznym dla użytkownika formacie IP w stylu globów
+
+Zawiera funkcje do:
+- generowania, sortowania i skracania adresów IP
+- konwersji adresów i przedziałów IP między różnymi formatami
+- operacji teoriomnogościowych na grupach adresów i podsieciach IP
+- dowolnych obliczeń i konwersji przedziałów adresów IP
+- zapytań o informacje organizacyjne dotyczące IEEE OUI i IAB
+- zapytań o dane związane ze standardami IP z kluczowych źródeł IANA
+
 %package -n python3-netaddr
 Summary:	A pure Python network address representation and manipulation library
+Summary(pl.UTF-8):	Czysto pythonowa biblioteka do reprezentacji i operacji na adresach sieciowych
 Group:		Development/Languages/Python
 
 %description -n python3-netaddr
@@ -66,8 +100,28 @@ Included are routines for:
 - querying IEEE OUI and IAB organisational information
 - querying of IP standards related data from key IANA data sources
 
+%description -n python3-netaddr -l pl.UTF-8
+Czysto pythonowa biblioteka do reprezentacji i operacji na adresach
+sieciowych.
+
+Zapewnia pythonowe sposoby pracy z:
+- adresami i podsieciami IPv4 i IPv6 (wraz z notacją CIDR)
+- adresami MAC (Media Access Control) w wielu formatach
+- identyfikatorami IEEE EUI-64, OUI i IAB
+- przedziałami adresów IP w stylu nmapa
+- przyjaznym dla użytkownika formacie IP w stylu globów
+
+Zawiera funkcje do:
+- generowania, sortowania i skracania adresów IP
+- konwersji adresów i przedziałów IP między różnymi formatami
+- operacji teoriomnogościowych na grupach adresów i podsieciach IP
+- dowolnych obliczeń i konwersji przedziałów adresów IP
+- zapytań o informacje organizacyjne dotyczące IEEE OUI i IAB
+- zapytań o dane związane ze standardami IP z kluczowych źródeł IANA
+
 %package -n netaddr
 Summary:	An interactive shell for the Python netaddr library
+Summary(pl.UTF-8):	Interaktywna powłoka do biblioteki Pythona netaddr
 Group:		Development/Languages/Python
 %if %{with python3}
 Requires:	python3-netaddr = %{version}-%{release}
@@ -78,109 +132,92 @@ Requires:	%{name} = %{version}-%{release}
 %description -n netaddr
 Interactive shell for the python-netaddr library.
 
+%description -n netaddr -l pl.UTF-8
+Interaktywna powłoka do biblioteki Pythona netaddr.
+
+%package apidocs
+Summary:	API documentation for Python netaddr module
+Summary(pl.UTF-8):	Dokumentacja API modułu Pythona netaddr
+Group:		Documentation
+
+%description apidocs
+API documentation for Python netaddr module.
+
+%description apidocs -l pl.UTF-8
+Dokumentacja API modułu Pythona netaddr.
+
 %prep
 %setup -q -n %{module}-%{version}
 %patch0 -p1
 
-%{__sed} -i -e '1s,/usr/bin/env python,%{?with_python3:%{__python3}}%{!?with_python3:%{__python}},' \
-	netaddr/tools/netaddr
-
 %build
+%if %{with python2}
 %py_build
+
+%if %{with tests}
+PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 \
+PYTHONPATH=$(pwd) \
+%{__python} -m pytest netaddr/tests
+%endif
+%endif
 
 %if %{with python3}
 %py3_build
+
+%if %{with tests}
+PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 \
+PYTHONPATH=$(pwd) \
+%{__python3} -m pytest netaddr/tests
+%endif
+%endif
+
+%if %{with doc}
+PYTHONPATH=$(pwd) \
+sphinx-build-3 -b html docs/source docs/build/html
 %endif
 
 %install
 rm -rf $RPM_BUILD_ROOT
-%py_install \
-	--optimize 2 \
-	--root=$RPM_BUILD_ROOT
 
-%py_ocomp $RPM_BUILD_ROOT%{py_sitescriptdir}
-%py_comp $RPM_BUILD_ROOT%{py_sitescriptdir}
+%if %{with python2}
+%py_install
+
 %py_postclean
 
-%if %{with apidocs}
-sphinx-build -b html -d build/doctrees -D latex_paper_size=a4 docs/source build/html
+%if %{with python3}
+%{__rm} $RPM_BUILD_ROOT%{_bindir}/*
+%endif
 %endif
 
 %if %{with python3}
-# Remove python2 artefacts
-%{__rm} -f $RPM_BUILD_ROOT%{_bindir}/*
-%py3_install \
-	--optimize 2 \
-	--root=$RPM_BUILD_ROOT
-%py3_ocomp $RPM_BUILD_ROOT%{py_sitescriptdir}
-%py3_comp $RPM_BUILD_ROOT%{py_sitescriptdir}
+%py3_install
 %endif
 
 %clean
 rm -rf $RPM_BUILD_ROOT
 
+%if %{with python2}
 %files
 %defattr(644,root,root,755)
-%doc AUTHORS CHANGELOG README.md
-%if %{with apidocs}
-%doc build/html
+%doc AUTHORS CHANGELOG COPYRIGHT LICENSE README.rst
+%{py_sitescriptdir}/netaddr
+%{py_sitescriptdir}/netaddr-%{version}-py*.egg-info
 %endif
-%{py_sitescriptdir}/*.egg-info
-%dir %{py_sitescriptdir}/%{module}
-%{py_sitescriptdir}/%{module}/*.py[co]
-%dir %{py_sitescriptdir}/%{module}/contrib
-%{py_sitescriptdir}/%{module}/contrib/*.py[co]
-%dir %{py_sitescriptdir}/%{module}/eui
-%{py_sitescriptdir}/%{module}/eui/*.py[co]
-%{py_sitescriptdir}/%{module}/eui/*.idx
-%{py_sitescriptdir}/%{module}/eui/*.txt
-%dir %{py_sitescriptdir}/%{module}/ip
-%{py_sitescriptdir}/%{module}/ip/*.py[co]
-%{py_sitescriptdir}/%{module}/ip/*.xml
-%dir %{py_sitescriptdir}/%{module}/strategy
-%{py_sitescriptdir}/%{module}/strategy/*.py[co]
-#%dir %{py_sitescriptdir}/%{module}/tests
-#%{py_sitescriptdir}/%{module}/tests/*.py[co]
-#%{py_sitescriptdir}/%{module}/tests/2.x/core
-#%{py_sitescriptdir}/%{module}/tests/2.x/eui
-#%{py_sitescriptdir}/%{module}/tests/2.x/ip
-#%{py_sitescriptdir}/%{module}/tests/2.x/strategy
 
 %if %{with python3}
 %files -n python3-netaddr
 %defattr(644,root,root,755)
-%doc AUTHORS CHANGELOG README.md
-%if %{with apidocs}
-%doc build/html
-%endif
-%{py3_sitescriptdir}/*.egg-info
-%dir %{py3_sitescriptdir}/%{module}
-%{py3_sitescriptdir}/%{module}/*.py
-%{py3_sitescriptdir}/%{module}/__pycache__
-%dir %{py3_sitescriptdir}/%{module}/contrib
-%{py3_sitescriptdir}/%{module}/contrib/*.py
-%{py3_sitescriptdir}/%{module}/contrib/__pycache__
-%dir %{py3_sitescriptdir}/%{module}/eui
-%{py3_sitescriptdir}/%{module}/eui/*.py
-%{py3_sitescriptdir}/%{module}/eui/__pycache__
-%{py3_sitescriptdir}/%{module}/eui/*.idx
-%{py3_sitescriptdir}/%{module}/eui/*.txt
-%dir %{py3_sitescriptdir}/%{module}/ip
-%{py3_sitescriptdir}/%{module}/ip/*.py
-%{py3_sitescriptdir}/%{module}/ip/__pycache__
-%{py3_sitescriptdir}/%{module}/ip/*.xml
-%dir %{py3_sitescriptdir}/%{module}/strategy
-%{py3_sitescriptdir}/%{module}/strategy/*.py
-%{py3_sitescriptdir}/%{module}/strategy/__pycache__
-#%dir %{py3_sitescriptdir}/%{module}/tests
-#%{py3_sitescriptdir}/%{module}/tests/*.py
-#%{py3_sitescriptdir}/%{module}/tests/__pycache__
-#%{py3_sitescriptdir}/%{module}/tests/3.x/core
-#%{py3_sitescriptdir}/%{module}/tests/3.x/eui
-#%{py3_sitescriptdir}/%{module}/tests/3.x/ip
-#%{py3_sitescriptdir}/%{module}/tests/3.x/strategy
+%doc AUTHORS CHANGELOG COPYRIGHT LICENSE README.rst
+%{py3_sitescriptdir}/netaddr
+%{py3_sitescriptdir}/netaddr-%{version}-py*.egg-info
 %endif
 
 %files -n netaddr
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_bindir}/netaddr
+
+%if %{with doc}
+%files apidocs
+%defattr(644,root,root,755)
+%doc docs/build/html/{_modules,_static,dev-how-to,reference,*.html,*.js}
+%endif
