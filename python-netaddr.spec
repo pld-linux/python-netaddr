@@ -10,7 +10,7 @@ Summary:	A pure Python network address representation and manipulation library
 Summary(pl.UTF-8):	Czysto pythonowa biblioteka do reprezentacji i operacji na adresach sieciowych
 Name:		python-netaddr
 Version:	0.10.1
-Release:	2
+Release:	3
 License:	BSD
 Group:		Development/Languages/Python
 Source0:	https://files.pythonhosted.org/packages/source/n/netaddr/%{module}-%{version}.tar.gz
